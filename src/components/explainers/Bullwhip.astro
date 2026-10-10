@@ -1,0 +1,465 @@
+---
+// Interactive bullwhip-effect simulation (Chen, Drezner, Ryan & Simchi-Levi, 2000):
+// four tiers, moving-average forecasts, order-up-to policy, optional sharing of customer demand.
+---
+
+<div class="bw card" data-bullwhip>
+  <div class="controls">
+    <label>
+      <span>Lead time <output data-out="L">2</output> weeks</span>
+      <input type="range" name="L" min="0" max="6" step="1" value="2" />
+    </label>
+    <label>
+      <span>Forecast window <output data-out="p">5</output> weeks</span>
+      <input type="range" name="p" min="2" max="15" step="1" value="5" />
+    </label>
+    <label>
+      <span>Demand noise σ = <output data-out="sigma">10</output></span>
+      <input type="range" name="sigma" min="2" max="20" step="1" value="10" />
+    </label>
+    <div class="toggles">
+      <label class="switch">
+        <input type="checkbox" name="share" />
+        <span>Share customer demand with every tier</span>
+      </label>
+      <button type="button" class="btn" data-resample>New random demand</button>
+    </div>
+  </div>
+
+  <div class="legend" aria-hidden="true">
+    <span><i class="sw demand"></i>Customer demand</span>
+    <span><i class="sw t0"></i>Retailer</span>
+    <span><i class="sw t1"></i>Wholesaler</span>
+    <span><i class="sw t2"></i>Distributor</span>
+    <span><i class="sw t3"></i>Factory</span>
+  </div>
+
+  <div class="chart-wrap">
+    <p class="chart-title">Orders placed each week</p>
+    <svg class="lines" viewBox="0 0 720 300" role="img" aria-label="Weekly orders placed by each tier of the supply chain" data-lines></svg>
+    <div class="tooltip" data-tip hidden></div>
+  </div>
+
+  <div class="chart-wrap">
+    <p class="chart-title">How much each tier amplifies demand variability <span class="muted">(variance of orders ÷ variance of customer demand)</span></p>
+    <svg class="bars" viewBox="0 0 720 170" role="img" aria-label="Variance amplification at each tier" data-bars></svg>
+  </div>
+
+  <details class="table-view">
+    <summary>View as table</summary>
+    <table data-table>
+      <thead>
+        <tr><th>Tier</th><th>Amplification, no sharing</th><th>Amplification, with sharing</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </details>
+</div>
+
+<script>
+  const TIERS = ['Retailer', 'Wholesaler', 'Distributor', 'Factory'];
+  const T = 70; // simulated weeks
+  const WARM = 15; // burn-in, not shown
+  const MU = 100;
+  const RHO = 0.4;
+
+  function mulberry32(seed: number) {
+    return () => {
+      seed |= 0;
+      seed = (seed + 0x6d2b79f5) | 0;
+      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function shocks(seed: number) {
+    const r = mulberry32(seed);
+    return Array.from({ length: T }, () => {
+      const u = 1 - r();
+      const v = r();
+      return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+    });
+  }
+
+  const mean = (a: number[]) => a.reduce((s, x) => s + x, 0) / a.length;
+  const variance = (a: number[]) => {
+    const m = mean(a);
+    return a.reduce((s, x) => s + (x - m) ** 2, 0) / (a.length - 1);
+  };
+
+  function simulate(eps: number[], L: number, p: number, sigma: number, share: boolean) {
+    const demand: number[] = [];
+    let prev = MU;
+    for (let t = 0; t < T; t++) {
+      prev = MU + RHO * (prev - MU) + sigma * eps[t];
+      demand.push(Math.max(0, prev));
+    }
+    const ma = (sig: number[], t: number) => mean(sig.slice(Math.max(0, t - p + 1), t + 1));
+    const orders: number[][] = [];
+    let incoming = demand;
+    for (let i = 0; i < TIERS.length; i++) {
+      const signal = share ? demand : incoming;
+      const q: number[] = [];
+      for (let t = 0; t < T; t++) {
+        const f = ma(signal, t);
+        const fPrev = t > 0 ? ma(signal, t - 1) : f;
+        q.push(Math.max(0, incoming[t] + (L + 1) * (f - fPrev)));
+      }
+      orders.push(q);
+      incoming = q;
+    }
+    const vd = variance(demand.slice(WARM));
+    return {
+      demand: demand.slice(WARM),
+      orders: orders.map((o) => o.slice(WARM)),
+      ratio: orders.map((o) => variance(o.slice(WARM)) / vd),
+    };
+  }
+
+  // Round a raw step up to 1, 2, 2.5 or 5 × 10^k so axis ticks are readable.
+  const niceStep = (raw: number) => {
+    const mag = 10 ** Math.floor(Math.log10(raw));
+    return mag * ([1, 1.5, 2, 2.5, 3, 4, 5, 7.5, 10].find((m) => m * mag >= raw) ?? 10);
+  };
+  const niceMax = (v: number, ticks = 4) => niceStep(v / ticks) * ticks;
+  const fmt = (x: number) => (x >= 10 ? x.toFixed(0) : x.toFixed(1));
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-bullwhip]')) {
+    const linesSvg = root.querySelector<SVGSVGElement>('[data-lines]')!;
+    const barsSvg = root.querySelector<SVGSVGElement>('[data-bars]')!;
+    const tip = root.querySelector<HTMLElement>('[data-tip]')!;
+    const tbody = root.querySelector('[data-table] tbody')!;
+    const input = (n: string) => root.querySelector<HTMLInputElement>(`[name="${n}"]`)!;
+    let seed = 7;
+    let eps = shocks(seed);
+    let current: ReturnType<typeof simulate>;
+
+    const W = 720, H = 300, M = { l: 44, r: 12, t: 10, b: 30 };
+
+    function render() {
+      const L = +input('L').value, p = +input('p').value, sigma = +input('sigma').value;
+      const share = input('share').checked;
+      for (const k of ['L', 'p', 'sigma']) root.querySelector(`[data-out="${k}"]`)!.textContent = input(k).value;
+
+      const without = simulate(eps, L, p, sigma, false);
+      const withShare = simulate(eps, L, p, sigma, true);
+      current = share ? withShare : without;
+
+      // Keep the y-axis fixed across the sharing toggle so the change is visible.
+      const yMax = niceMax(Math.max(...[without, withShare].flatMap((s) => s.orders.flat()), MU * 1.5));
+      const n = current.demand.length;
+      const x = (i: number) => M.l + (i / (n - 1)) * (W - M.l - M.r);
+      const y = (v: number) => H - M.b - (v / yMax) * (H - M.t - M.b);
+      const path = (a: number[]) => a.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('');
+
+      let g = '';
+      for (let k = 0; k <= 4; k++) {
+        const v = (yMax / 4) * k;
+        g += `<line class="grid" x1="${M.l}" x2="${W - M.r}" y1="${y(v)}" y2="${y(v)}"/>`;
+        g += `<text class="axis" x="${M.l - 8}" y="${y(v) + 4}" text-anchor="end">${v.toFixed(0)}</text>`;
+      }
+      for (let i = 0; i < n; i += 10) {
+        g += `<text class="axis" x="${x(i)}" y="${H - 8}" text-anchor="middle">wk ${i + 1}</text>`;
+      }
+      [...current.orders].reverse().forEach((o, ri) => {
+        g += `<path class="series t${TIERS.length - 1 - ri}" d="${path(o)}"/>`;
+      });
+      g += `<path class="series demand" d="${path(current.demand)}"/>`;
+      g += `<line class="cross" data-cross y1="${M.t}" y2="${H - M.b}" visibility="hidden"/>`;
+      g += `<rect class="hit" x="${M.l}" y="${M.t}" width="${W - M.l - M.r}" height="${H - M.t - M.b}"/>`;
+      linesSvg.innerHTML = g;
+
+      // Amplification bars
+      const BW = 720, rowH = 36, labelW = 100, rMax = niceMax(Math.max(...without.ratio, 2));
+      const bx = (v: number) => labelW + (v / rMax) * (BW - labelW - 70);
+      let b = '';
+      current.ratio.forEach((r, i) => {
+        const yy = 8 + i * rowH;
+        const other = (share ? without : withShare).ratio[i];
+        b += `<text class="axis label" x="0" y="${yy + 17}">${TIERS[i]}</text>`;
+        b += `<rect class="bar t${i}" x="${labelW}" y="${yy + 4}" width="${Math.max(4, bx(r) - labelW)}" height="20" rx="4"><title>${TIERS[i]}: ×${fmt(r)}</title></rect>`;
+        b += `<line class="other" x1="${bx(other)}" x2="${bx(other)}" y1="${yy}" y2="${yy + 28}"><title>${share ? 'Without' : 'With'} sharing: ×${fmt(other)}</title></line>`;
+        // Label sits at the bar end, hopping past the comparison tick if they'd collide.
+        const lx = bx(other) > bx(r) && bx(other) < bx(r) + 56 ? bx(other) + 8 : bx(r) + 8;
+        b += `<text class="value" x="${lx}" y="${yy + 19}">×${fmt(r)}</text>`;
+      });
+      b += `<line class="one" x1="${bx(1)}" x2="${bx(1)}" y1="4" y2="${8 + TIERS.length * rowH - 6}"/>`;
+      b += `<text class="axis" x="${bx(1)}" y="${8 + TIERS.length * rowH + 10}" text-anchor="middle">×1 = no amplification</text>`;
+      b += `<line class="other" x1="${BW - 200}" x2="${BW - 200}" y1="${8 + TIERS.length * rowH}" y2="${8 + TIERS.length * rowH + 14}"/>`;
+      b += `<text class="axis" x="${BW - 192}" y="${8 + TIERS.length * rowH + 11}">= ${share ? 'without' : 'with'} sharing, for comparison</text>`;
+      barsSvg.innerHTML = b;
+
+      tbody.innerHTML = TIERS.map(
+        (t, i) => `<tr><td>${t}</td><td>×${fmt(without.ratio[i])}</td><td>×${fmt(withShare.ratio[i])}</td></tr>`,
+      ).join('');
+
+      // Hover crosshair + tooltip
+      const hit = linesSvg.querySelector<SVGRectElement>('.hit')!;
+      const cross = linesSvg.querySelector<SVGLineElement>('[data-cross]')!;
+      hit.addEventListener('pointermove', (e) => {
+        const pt = linesSvg.createSVGPoint();
+        pt.x = e.clientX;
+        pt.y = e.clientY;
+        const loc = pt.matrixTransform(linesSvg.getScreenCTM()!.inverse());
+        const i = Math.round(((loc.x - M.l) / (W - M.l - M.r)) * (n - 1));
+        if (i < 0 || i >= n) return;
+        cross.setAttribute('x1', String(x(i)));
+        cross.setAttribute('x2', String(x(i)));
+        cross.setAttribute('visibility', 'visible');
+        tip.hidden = false;
+        tip.innerHTML =
+          `<strong>Week ${i + 1}</strong>` +
+          `<span><i class="sw demand"></i>Demand <b>${current.demand[i].toFixed(0)}</b></span>` +
+          TIERS.map((t, k) => `<span><i class="sw t${k}"></i>${t} <b>${current.orders[k][i].toFixed(0)}</b></span>`).join('');
+        const box = linesSvg.getBoundingClientRect();
+        const px = (x(i) / W) * box.width;
+        tip.style.left = `${px > box.width / 2 ? px - tip.offsetWidth - 12 : px + 12}px`;
+      });
+      hit.addEventListener('pointerleave', () => {
+        cross.setAttribute('visibility', 'hidden');
+        tip.hidden = true;
+      });
+    }
+
+    root.querySelectorAll('input').forEach((el) => el.addEventListener('input', render));
+    root.querySelector('[data-resample]')!.addEventListener('click', () => {
+      eps = shocks(++seed);
+      render();
+    });
+    render();
+  }
+</script>
+
+<style>
+  .bw {
+    --demand: #7c7970;
+    --t0: #86b6ef;
+    --t1: #3987e5;
+    --t2: #1c5cab;
+    --t3: #0d366b;
+    padding: clamp(1rem, 3vw, 1.75rem);
+    margin: 2rem 0;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+  }
+  :global(:root[data-theme='dark']) .bw {
+    --demand: #a8a59c;
+    --t0: #184f95;
+    --t1: #256abf;
+    --t2: #5598e7;
+    --t3: #b7d3f6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .bw {
+      --demand: #a8a59c;
+      --t0: #184f95;
+      --t1: #256abf;
+      --t2: #5598e7;
+      --t3: #b7d3f6;
+    }
+  }
+
+  .controls {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .controls label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    color: var(--ink-2);
+  }
+  output {
+    font-family: var(--font-mono);
+    color: var(--ink);
+    font-weight: 500;
+  }
+  input[type='range'] {
+    width: 100%;
+    accent-color: var(--accent);
+  }
+  .toggles {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--line);
+  }
+  .switch {
+    flex-direction: row !important;
+    align-items: center;
+    gap: 0.6rem !important;
+    color: var(--ink) !important;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .switch input {
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: var(--accent);
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+    color: var(--ink-2);
+    font-size: 0.82rem;
+    margin-bottom: 0.5rem;
+  }
+  .legend span,
+  .tooltip span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .sw {
+    display: inline-block;
+    width: 14px;
+    height: 3px;
+    border-radius: 2px;
+  }
+  .sw.demand {
+    background: repeating-linear-gradient(90deg, var(--demand) 0 4px, transparent 4px 6px);
+  }
+  .sw.t0 { background: var(--t0); }
+  .sw.t1 { background: var(--t1); }
+  .sw.t2 { background: var(--t2); }
+  .sw.t3 { background: var(--t3); }
+
+  .chart-wrap {
+    position: relative;
+    margin-top: 1.25rem;
+  }
+  .chart-title {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--ink);
+    margin: 0 0 0.4rem;
+  }
+  .chart-title .muted {
+    font-weight: 400;
+  }
+  svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  svg :global(.grid) {
+    stroke: var(--line);
+    stroke-width: 1;
+  }
+  svg :global(.axis) {
+    font-size: 11px;
+    fill: var(--ink-3);
+    font-family: var(--font-sans);
+  }
+  svg :global(.axis.label) {
+    font-size: 13px;
+    fill: var(--ink-2);
+  }
+  svg :global(.series) {
+    fill: none;
+    stroke-width: 2;
+    stroke-linejoin: round;
+  }
+  svg :global(.series.demand) {
+    stroke: var(--demand);
+    stroke-dasharray: 4 3;
+    stroke-width: 1.5;
+  }
+  svg :global(.series.t0) { stroke: var(--t0); }
+  svg :global(.series.t1) { stroke: var(--t1); }
+  svg :global(.series.t2) { stroke: var(--t2); }
+  svg :global(.series.t3) { stroke: var(--t3); }
+  svg :global(.bar.t0) { fill: var(--t0); }
+  svg :global(.bar.t1) { fill: var(--t1); }
+  svg :global(.bar.t2) { fill: var(--t2); }
+  svg :global(.bar.t3) { fill: var(--t3); }
+  svg :global(.other) {
+    stroke: var(--ink);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+  svg :global(.value) {
+    font-size: 13px;
+    font-family: var(--font-mono);
+    fill: var(--ink);
+  }
+  svg :global(.one) {
+    stroke: var(--ink-3);
+  }
+  svg :global(.cross) {
+    stroke: var(--ink-3);
+    stroke-width: 1;
+  }
+  svg :global(.hit) {
+    fill: transparent;
+    cursor: crosshair;
+  }
+  .tooltip {
+    position: absolute;
+    top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.6rem 0.75rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgb(0 0 0 / 0.12);
+    font-size: 0.8rem;
+    color: var(--ink-2);
+    pointer-events: none;
+    min-width: 150px;
+  }
+  .tooltip[hidden] {
+    display: none;
+  }
+  .tooltip :global(b) {
+    margin-left: auto;
+    padding-left: 0.75rem;
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-weight: 500;
+  }
+  .tooltip :global(span) {
+    display: flex;
+  }
+  .tooltip :global(.sw) {
+    margin-right: 0.35rem;
+    align-self: center;
+  }
+
+  .table-view {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+  }
+  .table-view summary {
+    cursor: pointer;
+    color: var(--ink-2);
+  }
+  .table-view table {
+    margin-top: 0.75rem;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  .table-view th,
+  .table-view td {
+    text-align: left;
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  @media (max-width: 640px) {
+    .controls {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,43 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../config';
+import { url } from '../lib/url';
+
+const year = new Date().getFullYear();
+---
+
+<footer>
+  <div class="container row">
+    <p>© {year} {site.name} · {site.location}</p>
+    <p class="links">
+      <a href={`mailto:${site.email}`}>{site.email}</a>
+      <a href={url('/notebook/rss.xml')} aria-label="Notebook RSS feed"><Icon name="lucide:rss" /></a>
+    </p>
+  </div>
+</footer>
+
+<style>
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 2rem 0;
+    font-size: 0.85rem;
+    color: var(--ink-3);
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+  }
+  p {
+    margin: 0;
+  }
+  .links {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  a {
+    color: var(--ink-2);
+  }
+</style>

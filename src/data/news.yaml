@@ -1,0 +1,19 @@
+# Newest first. Inline markdown links are supported: [text](url)
+- id: n6
+  date: 2026-10-01
+  text: Applying to PhD programs in Information Systems and Operations Management for Fall 2027.
+- id: n5
+  date: 2026-09-15
+  text: Started a new project on [point-of-sale data sharing](/research/pos-data-sharing/).
+- id: n4
+  date: 2026-06-10
+  text: Presented our work on forecast overrides at [Workshop / Conference].
+- id: n3
+  date: 2025-12-12
+  text: Attended [Conference] in [City] — [photos](/photos/conference-city/).
+- id: n2
+  date: 2025-08-01
+  text: Joined [Institution] as a Research Associate working with [Professor].
+- id: n1
+  date: 2023-03-01
+  text: Our demand forecasting system went live at [Company].

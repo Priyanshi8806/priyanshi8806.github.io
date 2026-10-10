@@ -1,0 +1,143 @@
+---
+import { render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { getAgenda, getProjects } from '../lib/content';
+import { stageLabel } from '../lib/labels';
+import { url } from '../lib/url';
+
+const agenda = await getAgenda();
+const projects = await getProjects();
+const items = await Promise.all(
+  agenda.map(async (q) => ({
+    q,
+    Content: (await render(q)).Content,
+    related: projects.filter((p) => p.data.questions.some((r) => r.id === q.id)),
+  })),
+);
+---
+
+<Base title="Research agenda" description="The questions I want to work on during a PhD, and how I'd approach them.">
+  <div class="container narrow">
+    <header>
+      <p class="eyebrow">Research agenda</p>
+      <h1>Questions I want to spend the next five years on</h1>
+      <p class="lede">
+        These are the problems I'd like to work on during a PhD. Some I'm already chipping away at; others
+        are still open. Each one lists the methods I'd use and the work so far that feeds into it.
+      </p>
+    </header>
+
+    <nav class="toc" aria-label="Questions">
+      {
+        items.map(({ q }, i) => (
+          <a href={`#${q.id}`}>
+            <span class="mono">0{i + 1}</span> {q.data.short}
+          </a>
+        ))
+      }
+    </nav>
+
+    {
+      items.map(({ q, Content, related }, i) => (
+        <section class="question" id={q.id}>
+          <div class="q-head">
+            <span class="num mono">0{i + 1}</span>
+            <span class={`badge stage-${q.data.stage}`}>{stageLabel[q.data.stage]}</span>
+          </div>
+          <h2>{q.data.title}</h2>
+          <p class="lede">{q.data.summary}</p>
+          <div class="methods">
+            {q.data.methods.map((m) => (
+              <span class="chip">{m}</span>
+            ))}
+          </div>
+          <div class="prose">
+            <Content />
+          </div>
+          {related.length > 0 && (
+            <div class="related">
+              <span class="eyebrow">Work so far</span>
+              <ul>
+                {related.map((p) => (
+                  <li>
+                    <a href={url(`/research/${p.id}/`)}>{p.data.title}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </section>
+      ))
+    }
+  </div>
+</Base>
+
+<style>
+  .toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 2rem 0 1rem;
+  }
+  .toc a {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+  .toc a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .toc .mono {
+    color: var(--accent);
+    font-size: 0.75rem;
+  }
+  .question {
+    padding-top: 3.5rem;
+    margin-top: 2rem;
+    border-top: 1px solid var(--line);
+    scroll-margin-top: 60px;
+  }
+  .q-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .num {
+    font-size: 1.6rem;
+    color: var(--accent);
+  }
+  .stage-active {
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-color: transparent;
+  }
+  .question h2 {
+    font-size: clamp(1.6rem, 3.4vw, 2.1rem);
+  }
+  .methods {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.5rem;
+  }
+  .related {
+    margin-top: 1.5rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+  .related .eyebrow {
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+  .related ul {
+    margin: 0;
+    padding-left: 1.2rem;
+  }
+</style>

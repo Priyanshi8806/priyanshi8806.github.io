@@ -1,0 +1,176 @@
+---
+import { load as loadYaml } from 'js-yaml';
+import { z } from 'astro/zod';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import cvRaw from '../data/cv.yaml?raw';
+import { site } from '../config';
+import { inline } from '../lib/inline';
+import { url } from '../lib/url';
+
+const CV = z.object({
+  summary: z.string().optional(),
+  sections: z.array(
+    z.object({
+      title: z.string(),
+      items: z.array(
+        z.object({
+          what: z.string(),
+          where: z.string().optional(),
+          when: z.union([z.string(), z.number()]).optional(),
+          details: z.array(z.string()).default([]),
+        }),
+      ),
+    }),
+  ),
+});
+const cv = CV.parse(loadYaml(cvRaw));
+const contact = [site.email, site.location, Astro.site?.host].filter(Boolean);
+---
+
+<Base title="CV" description={`Curriculum vitae of ${site.name}.`}>
+  <div class="container narrow cv">
+    <header class="cv-head">
+      <div>
+        <h1>{site.name}</h1>
+        <p class="contact mono">{contact.join(' · ')}</p>
+      </div>
+      <div class="btn-row no-print">
+        {
+          site.cvPdf ? (
+            <a class="btn primary" href={url(site.cvPdf)}>
+              <Icon name="lucide:file-text" /> Download PDF
+            </a>
+          ) : (
+            <button class="btn primary" type="button" onclick="window.print()">
+              <Icon name="lucide:printer" /> Save as PDF
+            </button>
+          )
+        }
+      </div>
+    </header>
+
+    {cv.summary && <p class="summary">{cv.summary}</p>}
+
+    {
+      cv.sections.map((s) => (
+        <section>
+          <h2>{s.title}</h2>
+          {s.items.map((it) => (
+            <div class="item">
+              <div class="line">
+                <span class="what" set:html={inline(it.what)} />
+                {it.when && <span class="when mono">{it.when}</span>}
+              </div>
+              {it.where && <div class="where" set:html={inline(it.where)} />}
+              {it.details.length > 0 && (
+                <ul>
+                  {it.details.map((d) => (
+                    <li set:html={inline(d)} />
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </section>
+      ))
+    }
+  </div>
+</Base>
+
+<style>
+  .cv-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 2px solid var(--ink);
+  }
+  .cv-head h1 {
+    margin: 0;
+  }
+  .contact {
+    margin: 0.4rem 0 0;
+    font-size: 0.8rem;
+    color: var(--ink-2);
+  }
+  .summary {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    color: var(--ink-2);
+    margin: 1.25rem 0 0;
+  }
+  section {
+    margin-top: 2.25rem;
+  }
+  h2 {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 0.4rem;
+    margin-bottom: 1rem;
+  }
+  .item {
+    margin-bottom: 1rem;
+    break-inside: avoid;
+  }
+  .line {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .what {
+    font-weight: 600;
+  }
+  .when {
+    flex: none;
+    font-size: 0.8rem;
+    color: var(--ink-3);
+    padding-top: 0.15rem;
+  }
+  .where {
+    color: var(--ink-2);
+    font-size: 0.95rem;
+  }
+  ul {
+    margin: 0.3rem 0 0;
+    padding-left: 1.2rem;
+    font-size: 0.95rem;
+    color: var(--ink-2);
+  }
+
+  @media print {
+    :global(.site-header),
+    :global(footer),
+    .no-print {
+      display: none !important;
+    }
+    :global(body) {
+      background: #fff;
+      color: #000;
+      font-size: 10.5pt;
+    }
+    :global(main) {
+      padding: 0;
+    }
+    .cv {
+      max-width: none;
+      padding: 0;
+    }
+    section {
+      margin-top: 1.2rem;
+    }
+    h2 {
+      color: #000;
+    }
+  }
+  @page {
+    margin: 1.6cm 1.8cm;
+  }
+</style>

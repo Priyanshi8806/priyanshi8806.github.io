@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import { inline } from '../lib/inline';
+import { formatDate } from '../lib/url';
+
+interface Props {
+  limit?: number;
+}
+const { limit } = Astro.props;
+const news = (await getCollection('news'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, limit);
+---
+
+<ol class="news">
+  {
+    news.map((n) => (
+      <li>
+        <time class="mono" datetime={n.data.date.toISOString()}>
+          {formatDate(n.data.date, 'month')}
+        </time>
+        <span set:html={inline(n.data.text)} />
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .news {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  li {
+    display: grid;
+    grid-template-columns: 9rem 1fr;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px dashed var(--line);
+    color: var(--ink-2);
+  }
+  li:last-child {
+    border-bottom: 0;
+  }
+  time {
+    font-size: 0.78rem;
+    color: var(--ink-3);
+    padding-top: 0.2rem;
+  }
+  @media (max-width: 560px) {
+    li {
+      grid-template-columns: 1fr;
+      gap: 0.1rem;
+    }
+  }
+</style>

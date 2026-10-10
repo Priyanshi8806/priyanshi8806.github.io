@@ -1,0 +1,38 @@
+---
+title: Why a small wiggle in demand becomes a tidal wave upstream
+summary: Play with a four-tier supply chain and see how lead times and forecasting turn steady customer demand into wild swings at the factory, and how sharing data calms them.
+date: 2026-10-01
+readingTime: 5 min, plus play time
+---
+
+import Bullwhip from '../../components/explainers/Bullwhip.astro';
+
+{/* PLACEHOLDER explainer. It's a working example of the format; replace it with one built on your own research. */}
+
+Picture a chain of four companies: a **retailer** sells to customers, orders from a **wholesaler**, who orders from a **distributor**, who orders from a **factory**. Each one sees only the orders of the company directly below it.
+
+Customer demand is fairly steady, around 100 units a week with some noise. Yet the factory sees orders that swing far more wildly. This is the **bullwhip effect**, and it costs firms money through excess inventory, idle capacity and stock-outs.
+
+## Try it
+
+Each tier forecasts demand with a moving average of the orders it receives, then orders enough to cover the expected demand over its lead time. Drag the sliders and watch the darker (upstream) lines.
+
+<Bullwhip />
+
+## What's going on
+
+Three things to notice:
+
+1. **Longer lead times make it worse.** When restocking takes longer, each tier has to react more strongly to any change in its forecast.
+2. **Short forecast windows make it worse.** A short moving average chases noise, so every random blip looks like a trend.
+3. **Sharing customer demand helps, but doesn't eliminate it.** When every tier forecasts from the *customer's* demand instead of the orders it receives, amplification grows roughly linearly along the chain instead of multiplying at each step.
+
+The tick marks in the second chart show the other scenario, so you can compare *with* and *without* sharing directly.
+
+## Why this matters for my research
+
+[Placeholder: two or three sentences connecting this mechanism to your research question. For example: if sharing is so valuable, why don't more retailers do it? Who pays the cost, and who captures the gains? That's the question behind my [data-sharing project](/research/pos-data-sharing/).]
+
+<p class="muted" style="font-size:0.9rem">
+  Model: Chen, Drezner, Ryan & Simchi-Levi (2000), <em>Management Science</em>. Customer demand follows an AR(1) process (ρ = 0.4) around a mean of 100; each tier uses an order-up-to policy with a moving-average forecast. The first 15 weeks are discarded as burn-in.
+</p>

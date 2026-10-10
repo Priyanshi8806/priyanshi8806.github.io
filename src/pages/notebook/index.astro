@@ -1,0 +1,39 @@
+---
+import Base from '../../layouts/Base.astro';
+import NotebookList from '../../components/NotebookList.astro';
+import Icon from '../../components/Icon.astro';
+import { getNotebook } from '../../lib/content';
+import { url } from '../../lib/url';
+
+const entries = await getNotebook();
+---
+
+<Base title="Lab notebook" description="Short, dated notes on research in progress: what worked, what didn't, and what's next.">
+  <div class="container narrow">
+    <header>
+      <p class="eyebrow">Lab notebook</p>
+      <h1>Research, in progress</h1>
+      <p class="lede">
+        Short, dated notes on what I'm working on: ideas, progress, methods, and the experiments that didn't
+        pan out. Research is mostly the messy middle, so this is where I keep it.
+      </p>
+      <a class="rss" href={url('/notebook/rss.xml')}><Icon name="lucide:rss" /> Subscribe via RSS</a>
+    </header>
+    <div class="list">
+      <NotebookList entries={entries} />
+    </div>
+  </div>
+</Base>
+
+<style>
+  .rss {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.88rem;
+  }
+  .list {
+    margin-top: 2.5rem;
+    border-top: 1px solid var(--line);
+  }
+</style>

@@ -1,0 +1,172 @@
+---
+import { Image } from 'astro:assets';
+import { render, getEntries, getEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import NotebookList from '../../components/NotebookList.astro';
+import { getProjects, getNotebook } from '../../lib/content';
+import { statusLabel, kindLabel, linkLabels } from '../../lib/labels';
+import { url } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project) => ({ params: { id: project.id }, props: { project } }));
+}
+
+const { project } = Astro.props;
+const d = project.data;
+const { Content } = await render(project);
+const questions = await getEntries(d.questions);
+const explainer = d.explainer ? await getEntry(d.explainer) : undefined;
+const notes = (await getNotebook()).filter((n) => n.data.project?.id === project.id);
+const links = Object.entries(d.links).filter(([, href]) => href);
+---
+
+<Base title={d.title} description={d.tldr}>
+  <article class="container narrow">
+    <a class="back" href={url('/research/')}>← All research</a>
+    <div class="meta">
+      <span class="badge accent">{statusLabel[d.status]}</span>
+      <span class="badge">{kindLabel[d.kind]}</span>
+      <span class="mono muted">{d.date.getUTCFullYear()}</span>
+    </div>
+    <h1>{d.title}</h1>
+    {d.authors.length > 0 && <p class="authors">{d.authors.join(', ')}{d.venue && <span class="muted"> · {d.venue}</span>}</p>}
+
+    {
+      links.length > 0 && (
+        <div class="btn-row">
+          {links.map(([k, href]) => (
+            <a class="btn" href={href}>
+              <Icon name={linkLabels[k].icon} /> {linkLabels[k].label}
+            </a>
+          ))}
+        </div>
+      )
+    }
+
+    <div class="callout tldr">
+      <strong>TL;DR</strong>
+      {d.tldr}
+      {d.why && <p class="why"><em>Why it matters:</em> {d.why}</p>}
+    </div>
+
+    {
+      d.figure && (
+        <figure class="key-figure">
+          <Image src={d.figure} alt={d.figureCaption ?? ''} width={1400} />
+          {d.figureCaption && <figcaption>{d.figureCaption}</figcaption>}
+        </figure>
+      )
+    }
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    {
+      explainer && (
+        <a class="card explainer" href={url(`/explainers/${explainer.id}/`)}>
+          <Icon name="lucide:flask-conical" size="1.5em" />
+          <div>
+            <span class="eyebrow">Interactive explainer</span>
+            <strong>{explainer.data.title}</strong>
+          </div>
+          <Icon name="lucide:arrow-right" />
+        </a>
+      )
+    }
+
+    {
+      questions.length > 0 && (
+        <section class="section">
+          <h2 class="small-h">Part of my research agenda</h2>
+          <ul class="qs">
+            {questions.map((q) => (
+              <li>
+                <a href={url(`/agenda/#${q.id}`)}>{q.data.title}</a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      notes.length > 0 && (
+        <section class="section">
+          <h2 class="small-h">Notebook entries</h2>
+          <NotebookList entries={notes} />
+        </section>
+      )
+    }
+  </article>
+</Base>
+
+<style>
+  .back {
+    display: inline-block;
+    font-size: 0.88rem;
+    margin-bottom: 2rem;
+    text-decoration: none;
+  }
+  .meta {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+  }
+  .authors {
+    color: var(--ink-2);
+    margin-bottom: 1.25rem;
+  }
+  .tldr {
+    font-size: 1.05rem;
+  }
+  .tldr .why {
+    margin: 0.6rem 0 0;
+    color: var(--ink-2);
+    font-size: 0.95rem;
+  }
+  .key-figure {
+    margin: 2rem 0;
+  }
+  .key-figure :global(img) {
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+  }
+  figcaption {
+    font-size: 0.85rem;
+    color: var(--ink-3);
+    margin-top: 0.6rem;
+  }
+  .explainer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    margin-top: 2.5rem;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .explainer div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .explainer .eyebrow {
+    margin: 0;
+  }
+  .explainer :global(svg) {
+    color: var(--accent);
+  }
+  .small-h {
+    font-size: 1.2rem;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 0.5rem;
+  }
+  .qs {
+    padding-left: 1.2rem;
+  }
+</style>

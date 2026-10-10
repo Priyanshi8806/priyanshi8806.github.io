@@ -1,0 +1,31 @@
+---
+// Build-time SVG icons from Iconify sets (no client JS).
+// Usage: <Icon name="lucide:mail" />, <Icon name="academicons:google-scholar" />
+import { getIconData, iconToSVG, replaceIDs } from '@iconify/utils';
+import lucide from '@iconify-json/lucide/icons.json';
+import academicons from '@iconify-json/academicons/icons.json';
+import brands from '@iconify-json/fa6-brands/icons.json';
+
+interface Props {
+  name: string;
+  size?: string;
+  class?: string;
+  label?: string;
+}
+
+const sets: Record<string, any> = { lucide, academicons, 'fa6-brands': brands };
+const { name, size = '1em', class: className, label } = Astro.props;
+const [prefix, iconName] = name.split(':');
+const data = getIconData(sets[prefix], iconName);
+if (!data) throw new Error(`Icon not found: ${name}`);
+const { attributes, body } = iconToSVG(data, { height: size });
+---
+
+<svg
+  {...attributes}
+  class={className}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  set:html={replaceIDs(body)}
+/>

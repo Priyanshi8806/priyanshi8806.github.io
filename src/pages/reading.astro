@@ -1,0 +1,104 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+
+const readings = await getCollection('readings');
+const themes = [...new Set(readings.map((r) => r.data.theme))];
+---
+
+<Base title="Reading list" description="Papers and books that shaped how I think about research, each with a note on why.">
+  <div class="container narrow">
+    <header>
+      <p class="eyebrow">Reading list</p>
+      <h1>Papers that shaped my thinking</h1>
+      <p class="lede">
+        Not a bibliography. These are the works I keep coming back to, each with a note on what it changed in
+        how I think.
+      </p>
+    </header>
+
+    {
+      themes.map((theme) => (
+        <section class="section">
+          <div class="section-head">
+            <h2>{theme}</h2>
+          </div>
+          <ol class="readings">
+            {readings
+              .filter((r) => r.data.theme === theme)
+              .sort((a, b) => a.data.year - b.data.year)
+              .map(({ data: r }) => (
+                <li>
+                  <p class="cite">
+                    <span class="authors">{r.authors}</span> <span class="mono year">({r.year})</span>
+                    <br />
+                    {r.url ? (
+                      <a class="title" href={r.url} target="_blank" rel="noopener">
+                        {r.title} <Icon name="lucide:arrow-up-right" />
+                      </a>
+                    ) : (
+                      <span class="title">{r.title}</span>
+                    )}
+                    {r.venue && <em class="venue">{r.venue}</em>}
+                  </p>
+                  <p class="note">{r.note}</p>
+                </li>
+              ))}
+          </ol>
+        </section>
+      ))
+    }
+  </div>
+</Base>
+
+<style>
+  .readings {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  li {
+    padding: 1rem 0 1.25rem;
+    border-bottom: 1px dashed var(--line);
+  }
+  li:last-child {
+    border-bottom: 0;
+  }
+  .cite {
+    margin: 0 0 0.5rem;
+    font-size: 0.9rem;
+    color: var(--ink-2);
+  }
+  .year {
+    font-size: 0.8rem;
+    color: var(--ink-3);
+  }
+  .title {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  a.title:hover {
+    color: var(--accent);
+  }
+  .title :global(svg) {
+    display: inline;
+    width: 0.8em;
+    color: var(--ink-3);
+  }
+  .venue {
+    display: block;
+    color: var(--ink-3);
+    font-size: 0.85rem;
+  }
+  .note {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    border-left: 2px solid var(--accent);
+    padding-left: 0.9rem;
+    color: var(--ink-2);
+  }
+</style>

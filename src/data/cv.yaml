@@ -1,0 +1,80 @@
+# Single source of truth for the CV page (and its printed PDF).
+# Every section is optional; delete what you don't need. Order here = order on the page.
+
+summary: >-
+  Research Associate studying how information and algorithms shape operational decisions.
+  [N] years of industry experience in [domain]. Applying to PhD programs in IS and OM.
+
+sections:
+  - title: Education
+    items:
+      - what: "M.S. / M.Tech in [Field]"
+        where: "[University]"
+        when: 2020 – 2022
+        details:
+          - "Thesis: [Title], advised by [Advisor]"
+          - "GPA: [x/y] · [Honors]"
+      - what: "B.Tech in [Field]"
+        where: "[University]"
+        when: 2016 – 2020
+        details:
+          - "[Rank / honors]"
+
+  - title: Research Experience
+    items:
+      - what: Research Associate
+        where: "[Institution] · with Prof. [Name]"
+        when: 2025 – present
+        details:
+          - "[Project, method, and your specific role]"
+          - "[Another bullet]"
+
+  - title: Working Papers
+    items:
+      - what: "Do Store Managers Know Better? Evidence from Algorithmic Forecast Overrides"
+        where: "with [Coauthor]"
+        when: 2026
+      - what: "Sharing Point-of-Sale Data in Multi-Tier Supply Chains — Who Benefits?"
+        where: "Solo · in progress"
+        when: 2026
+
+  - title: Industry Experience
+    items:
+      - what: "[Title]"
+        where: "[Company]"
+        when: 2022 – 2025
+        details:
+          - "[Impact bullet with a number]"
+          - "[Impact bullet with a number]"
+
+  - title: Presentations
+    items:
+      - what: "[Talk title]"
+        where: "[Seminar / Conference], [City]"
+        when: 2026
+
+  - title: Honors & Awards
+    items:
+      - what: "[Award]"
+        where: "[Organization]"
+        when: 2021
+
+  - title: Teaching
+    items:
+      - what: "Teaching Assistant, [Course]"
+        where: "[University]"
+        when: 2021
+
+  - title: Skills
+    items:
+      - what: Methods
+        where: "Causal inference (DiD, IV, RD), panel econometrics, optimization, simulation, ML / NLP"
+      - what: Tools
+        where: "Python, R, Stata, SQL, Gurobi, Git"
+
+  - title: References
+    items:
+      - what: "Prof. [Name]"
+        where: "[Title], [Institution] · [email]"
+      - what: "Prof. [Name]"
+        where: "[Title], [Institution] · [email]"

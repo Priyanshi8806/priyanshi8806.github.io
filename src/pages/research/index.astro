@@ -1,0 +1,55 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import ResearchMap from '../../components/ResearchMap.astro';
+import { getProjects } from '../../lib/content';
+
+const projects = await getProjects();
+const groups = [
+  { kind: 'paper', title: 'Working papers & research in progress' },
+  { kind: 'industry', title: 'Industry projects' },
+  { kind: 'academic', title: 'Academic projects' },
+] as const;
+---
+
+<Base title="Research" description="Working papers, research in progress, industry and academic projects.">
+  <div class="container">
+    <header class="page-head">
+      <p class="eyebrow">Research</p>
+      <h1>Questions, projects, and the methods that connect them</h1>
+      <p class="lede">
+        My work sits between Information Systems and Operations Management. The map below shows how each
+        project feeds into the questions I care about, and which methods I've used along the way.
+      </p>
+    </header>
+
+    <ResearchMap />
+
+    {
+      groups.map((g) => {
+        const items = projects.filter((p) => p.data.kind === g.kind);
+        return (
+          items.length > 0 && (
+            <section class="section" id={g.kind}>
+              <div class="section-head">
+                <h2>{g.title}</h2>
+                <span class="muted mono">{items.length}</span>
+              </div>
+              <div class="grid">
+                {items.map((p) => (
+                  <ProjectCard project={p} />
+                ))}
+              </div>
+            </section>
+          )
+        );
+      })
+    }
+  </div>
+</Base>
+
+<style>
+  .page-head {
+    margin-bottom: 2.5rem;
+  }
+</style>

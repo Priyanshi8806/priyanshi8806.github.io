@@ -1,0 +1,79 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import { getPhotos } from '../../lib/content';
+import { url, formatDate } from '../../lib/url';
+
+const posts = await getPhotos();
+---
+
+<Base title="Photos" description="A picture blog: field visits, conferences, and things I noticed along the way.">
+  <div class="container">
+    <header class="head">
+      <p class="eyebrow">Photos</p>
+      <h1>Things I noticed along the way</h1>
+      <p class="lede">Field visits, conferences, and the occasional long walk.</p>
+    </header>
+
+    <div class="masonry">
+      {
+        posts.map((p) => (
+          <a class="post" href={url(`/photos/${p.id}/`)}>
+            <Image src={p.data.cover} alt={p.data.coverAlt} width={720} />
+            <div class="caption">
+              <h2>{p.data.title}</h2>
+              <span class="mono">
+                {formatDate(p.data.date, 'month')}
+                {p.data.location && ` · ${p.data.location}`}
+                {p.data.images.length > 0 && ` · ${p.data.images.length + 1} photos`}
+              </span>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</Base>
+
+<style>
+  .head {
+    margin-bottom: 2.5rem;
+  }
+  .masonry {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    gap: 1.25rem;
+  }
+  .post {
+    display: block;
+    aspect-ratio: 3 / 2;
+    border-radius: var(--radius);
+    overflow: hidden;
+    position: relative;
+    color: #fff;
+    text-decoration: none;
+  }
+  .post :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+  .post:hover :global(img) {
+    transform: scale(1.03);
+  }
+  .caption {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 2.5rem 1rem 0.9rem;
+    background: linear-gradient(transparent, rgb(0 0 0 / 0.65));
+  }
+  h2 {
+    font-size: 1.2rem;
+    margin: 0 0 0.15rem;
+  }
+  .mono {
+    font-size: 0.72rem;
+    opacity: 0.85;
+  }
+</style>

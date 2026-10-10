@@ -1,0 +1,39 @@
+# Papers that shaped your thinking. `note` = one or two lines on why (in your own words).
+- id: lee-1997
+  theme: Information in supply chains
+  authors: Lee, H. L., Padmanabhan, V., & Whang, S.
+  year: 1997
+  title: "Information Distortion in a Supply Chain: The Bullwhip Effect"
+  venue: Management Science
+  url: https://doi.org/10.1287/mnsc.43.4.546
+  note: "[Placeholder] Why it matters to you — e.g., the first paper that made me see information as an operational lever."
+- id: chen-2000
+  theme: Information in supply chains
+  authors: Chen, F., Drezner, Z., Ryan, J. K., & Simchi-Levi, D.
+  year: 2000
+  title: "Quantifying the Bullwhip Effect in a Simple Supply Chain"
+  venue: Management Science
+  url: https://doi.org/10.1287/mnsc.46.3.436.12069
+  note: "[Placeholder] The model behind the bullwhip explainer on this site."
+- id: dietvorst-2015
+  theme: Humans and algorithms
+  authors: Dietvorst, B. J., Simmons, J. P., & Massey, C.
+  year: 2015
+  title: "Algorithm Aversion: People Erroneously Avoid Algorithms after Seeing Them Err"
+  venue: "Journal of Experimental Psychology: General"
+  url: https://doi.org/10.1037/xge0000033
+  note: "[Placeholder] Your note."
+- id: kesavan-2020
+  theme: Humans and algorithms
+  authors: "[Authors]"
+  year: 2020
+  title: "[Another paper you love]"
+  venue: "[Venue]"
+  note: "[Placeholder] Your note."
+- id: method-1
+  theme: Methods I lean on
+  authors: Angrist, J. D., & Pischke, J.-S.
+  year: 2009
+  title: "Mostly Harmless Econometrics"
+  venue: Princeton University Press
+  note: "[Placeholder] Your note."

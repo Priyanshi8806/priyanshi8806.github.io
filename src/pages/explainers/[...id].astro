@@ -1,0 +1,38 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { getExplainers } from '../../lib/content';
+import { url, formatDate } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const explainers = await getExplainers();
+  return explainers.map((e) => ({ params: { id: e.id }, props: { explainer: e } }));
+}
+
+const { explainer } = Astro.props;
+const { Content } = await render(explainer);
+---
+
+<Base title={explainer.data.title} description={explainer.data.summary}>
+  <article class="container narrow">
+    <a class="back" href={url('/explainers/')}>← All explainers</a>
+    <p class="eyebrow">
+      Interactive explainer · {formatDate(explainer.data.date)}
+      {explainer.data.readingTime && ` · ${explainer.data.readingTime}`}
+    </p>
+    <h1>{explainer.data.title}</h1>
+    <p class="lede">{explainer.data.summary}</p>
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .back {
+    display: inline-block;
+    font-size: 0.88rem;
+    margin-bottom: 2rem;
+    text-decoration: none;
+  }
+</style>

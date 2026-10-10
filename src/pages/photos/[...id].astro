@@ -1,0 +1,164 @@
+---
+import { Image, getImage } from 'astro:assets';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import { getPhotos } from '../../lib/content';
+import { url, formatDate } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const posts = await getPhotos();
+  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const d = post.data;
+const photos = [{ src: d.cover, alt: d.coverAlt, caption: undefined as string | undefined }, ...d.images];
+// Large versions for the lightbox.
+const large = await Promise.all(photos.map((p) => getImage({ src: p.src, width: 2000 })));
+const og = (await getImage({ src: d.cover, width: 1200, format: 'jpg' })).src;
+---
+
+<Base title={d.title} description={`${d.title}${d.location ? ` — ${d.location}` : ''}`} image={og}>
+  <article class="container">
+    <div class="narrow-block">
+      <a class="back" href={url('/photos/')}>← All photos</a>
+      <p class="eyebrow">
+        {formatDate(d.date)}
+        {d.location && <> · <Icon name="lucide:map-pin" /> {d.location}</>}
+      </p>
+      <h1>{d.title}</h1>
+      <div class="prose">
+        <Content />
+      </div>
+    </div>
+
+    <div class="gallery">
+      {
+        photos.map((p, i) => (
+          <figure class={i === 0 ? 'lead' : ''}>
+            <button type="button" data-full={large[i].src} data-caption={p.caption ?? ''} aria-label={`Enlarge: ${p.alt}`}>
+              <Image src={p.src} alt={p.alt} width={i === 0 ? 1400 : 900} />
+            </button>
+            {p.caption && <figcaption>{p.caption}</figcaption>}
+          </figure>
+        ))
+      }
+    </div>
+  </article>
+
+  <dialog class="lightbox" aria-label="Photo viewer">
+    <form method="dialog"><button class="close" aria-label="Close"><Icon name="lucide:x" /></button></form>
+    <img alt="" />
+    <p class="lb-caption"></p>
+  </dialog>
+</Base>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('.lightbox')!;
+  const img = dialog.querySelector('img')!;
+  const cap = dialog.querySelector<HTMLElement>('.lb-caption')!;
+  document.querySelectorAll<HTMLButtonElement>('.gallery button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      img.src = btn.dataset.full!;
+      img.alt = btn.querySelector('img')?.alt ?? '';
+      cap.textContent = btn.dataset.caption ?? '';
+      dialog.showModal();
+    });
+  });
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+</script>
+
+<style>
+  .narrow-block {
+    max-width: var(--narrow);
+    margin: 0 auto 2.5rem;
+  }
+  .back {
+    display: inline-block;
+    font-size: 0.88rem;
+    margin-bottom: 2rem;
+    text-decoration: none;
+  }
+  .eyebrow :global(svg) {
+    display: inline;
+    vertical-align: -2px;
+  }
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    align-items: start;
+  }
+  figure {
+    margin: 0;
+  }
+  figure.lead {
+    grid-column: 1 / -1;
+  }
+  figure button {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  figure :global(img) {
+    width: 100%;
+  }
+  figcaption {
+    font-size: 0.85rem;
+    color: var(--ink-3);
+    margin-top: 0.5rem;
+  }
+  @media (max-width: 640px) {
+    .gallery {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .lightbox {
+    max-width: 96vw;
+    max-height: 96vh;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+  .lightbox::backdrop {
+    background: rgb(0 0 0 / 0.88);
+  }
+  .lightbox img {
+    max-width: 94vw;
+    max-height: 86vh;
+    width: auto;
+    margin: 0 auto;
+    border-radius: 6px;
+  }
+  .lb-caption {
+    color: #ddd;
+    text-align: center;
+    margin: 0.75rem 0 0;
+    font-size: 0.9rem;
+  }
+  .close {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.15);
+    color: #fff;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+</style>

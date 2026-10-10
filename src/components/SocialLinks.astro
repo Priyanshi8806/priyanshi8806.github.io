@@ -1,0 +1,38 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../config';
+import { url } from '../lib/url';
+
+interface Props {
+  showCv?: boolean;
+  showBooking?: boolean;
+}
+const { showCv = true, showBooking = true } = Astro.props;
+
+const items = [
+  showCv && { href: url('/cv/'), label: 'CV', icon: 'lucide:file-text' },
+  site.email && { href: `mailto:${site.email}`, label: 'Email', icon: 'lucide:mail' },
+  site.links.scholar && { href: site.links.scholar, label: 'Scholar', icon: 'academicons:google-scholar' },
+  site.links.github && { href: site.links.github, label: 'GitHub', icon: 'fa6-brands:github' },
+  site.links.linkedin && { href: site.links.linkedin, label: 'LinkedIn', icon: 'fa6-brands:linkedin-in' },
+  site.links.orcid && { href: site.links.orcid, label: 'ORCID', icon: 'academicons:orcid' },
+  site.links.x && { href: site.links.x, label: 'X', icon: 'fa6-brands:x-twitter' },
+].filter(Boolean) as { href: string; label: string; icon: string }[];
+---
+
+<div class="btn-row">
+  {
+    showBooking && site.booking && (
+      <a class="btn primary" href={site.booking} target="_blank" rel="noopener">
+        <Icon name="lucide:calendar" /> Book a 20-min chat
+      </a>
+    )
+  }
+  {
+    items.map((i) => (
+      <a class="btn" href={i.href} target={i.href.startsWith('http') ? '_blank' : undefined} rel="noopener">
+        <Icon name={i.icon} /> {i.label}
+      </a>
+    ))
+  }
+</div>
