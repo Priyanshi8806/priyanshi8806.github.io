@@ -10,7 +10,7 @@ images:
     alt: Priyanshi during an ICD or container terminal visit
     caption: Exposure to intermodal movement, container handling, and road-logistics interfaces during site visits.
 
-  - src: ./temperature-controlled-warehouse.jpg
+  - src: ./temperature_controlled_warehouse.jpg
     alt: Priyanshi visiting a temperature-controlled warehouse
     caption: Observing warehouse discipline and handling requirements in temperature-controlled logistics.
 
