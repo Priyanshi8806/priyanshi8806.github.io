@@ -3,7 +3,7 @@ title: Kuehne+Nagel — Learning Operations from the Ground
 summary: My time at Kuehne+Nagel exposed me to road logistics, warehousing, cold-chain operations, air cargo, and cross-functional supply-chain coordination across real operational settings.
 date: 2024-08-15
 location: "Gurugram / Delhi NCR, India"
-cover: ./kuehne-nagel-cover.jpeg
+cover: ./kuehne-nagel-cover.jpg
 coverAlt: Priyanshi standing in front of the Kuehne plus Nagel logo
 images:
   - src: ./icd-visit.jpg
