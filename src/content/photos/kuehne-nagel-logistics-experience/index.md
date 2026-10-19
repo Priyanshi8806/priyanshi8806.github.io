@@ -3,14 +3,14 @@ title: Kuehne+Nagel — Learning Operations from the Ground
 summary: My time at Kuehne+Nagel exposed me to road logistics, warehousing, cold-chain operations, air cargo, and cross-functional supply-chain coordination across real operational settings.
 date: 2024-08-15
 location: "Gurugram / Delhi NCR, India"
-cover: ./kuehne-nagel-cover.jpg
+cover: ./kuehne-nagel-cover.jpeg
 coverAlt: Priyanshi standing in front of the Kuehne plus Nagel logo
 images:
   - src: ./icd-visit.jpg
     alt: Priyanshi during an ICD or container terminal visit
     caption: Exposure to intermodal movement, container handling, and road-logistics interfaces during site visits.
 
-  - src: ./temperature_controlled_warehouse.jpg
+  - src: ./temperatur_controlled_warehouse.jpg
     alt: Priyanshi visiting a temperature-controlled warehouse
     caption: Observing warehouse discipline and handling requirements in temperature-controlled logistics.
 
@@ -18,8 +18,8 @@ images:
     alt: Priyanshi at an airport cargo or warehouse facility
     caption: Exposure to airport cargo operations and warehousing processes in logistics workflows.
 
-  - src: ./air-logistics-meeting.jpg
-    alt: Priyanshi with colleagues during an air logistics or global operations meeting
+  - src: ./Global_logistics_air_logistics_meet.jpg
+    alt: Priyanshi with colleagues during a logistics team meeting
     caption: Cross-functional exposure through logistics meetings and collaborative discussions across teams.
 
   - src: ./supply-chain-meeting.jpg
