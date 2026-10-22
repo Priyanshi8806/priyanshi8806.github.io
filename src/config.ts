@@ -1,42 +1,44 @@
 // Site-wide settings. Most personal info lives here; page content lives in src/content and src/data.
 
 export const site = {
-  name: 'Your Name',
-  initials: 'YN',
+  name: 'Priyanshi',
+  initials: 'P',
+
   description:
-    'Research portfolio of Your Name — Information Systems & Operations Management.',
+    'Research portfolio of Priyanshi — Information Systems, Economics of AI, Human–AI Interaction, and Operations.',
 
   // Shown above the headline on the home page.
-  status: 'Applying to PhD programs · Fall 2027 · Information Systems & Operations Management',
+  status:
+    'Research Associate at ISB · PhD applicant for Fall 2027 · Information Systems & Operations',
 
-  // The one question you want a reader to remember. Keep it to a sentence.
+  // The research question highlighted on the home page.
   question:
-    'How should organizations design information flows so that people and algorithms make better operational decisions together?',
+    'How do AI and digital technologies reshape decision-making, work, organizations, and communities?',
 
-  // 2–3 sentences: who you are, what you do, how you work.
+  // Short introduction shown on the home page.
   intro:
-    'I am a Research Associate at Indian School of Business, where I study [topic] using [methods]. Before that, I spent more than 1 year at Kuehne+Nagel building [thing], which is where I first ran into the problems I now study. I combine [empirical / analytical / computational] methods with real operational data.',
+    'I am a Research Associate at the Indian School of Business, where I study AI, digital technologies, and technology-enabled decision-making using large-scale digital-trace and text data, causal inference, NLP, LLM evaluation, panel methods, and machine learning. My current research spans geographic bias in LLMs, AI coding assistants and technical debt, the future of work, and the evolution of AI firms. Before moving into academic research, I worked in logistics and operations at Kuehne+Nagel, an experience that shaped my interest in how information, technology, and operational decisions interact.',
 
-  role: 'Research Associate, [Institution]',
-  location: '[City, Country]',
-  email: 'you@example.com',
+  role: 'Research Associate, Indian School of Business',
+  location: 'Hyderabad, India',
+  email: 'priyanshi8806@gmail.com',
 
   // Leave a value empty ('') to hide that link.
   links: {
-    scholar: 'https://scholar.google.com/',
+    scholar: '',
     github: 'https://github.com/Priyanshi8806',
-    linkedin: 'https://www.linkedin.com/in/yourusername',
+    linkedin: 'https://www.linkedin.com/in/priyanshi-35135118a/',
     orcid: '',
     x: '',
   },
 
-  // Calendly / cal.com link for "book a chat". Empty to hide.
-  booking: 'https://cal.com/yourusername/20min',
+  // Leave empty to hide the booking link.
+  booking: '',
 
-  // Path to a static CV PDF in /public (e.g. '/cv.pdf'). Empty → the CV page offers "Print / Save as PDF".
+  // Static CV PDF stored in /public.
   cvPdf: '/Priyanshi_IS.pdf',
 
-  // Privacy-friendly analytics. Create a free site at goatcounter.com and put its code here (e.g. 'yourname').
+  // Privacy-friendly analytics. Leave empty if unused.
   goatcounter: '',
 };
 
