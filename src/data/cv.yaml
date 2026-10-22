@@ -1,80 +1,196 @@
-# Single source of truth for the CV page (and its printed PDF).
-# Every section is optional; delete what you don't need. Order here = order on the page.
+# CV page content.
+# Order here = order shown on the website.
 
 summary: >-
-  Research Associate studying how information and algorithms shape operational decisions.
-  [N] years of industry experience in [domain]. Applying to PhD programs in IS and OM.
+  Research Associate working at the intersection of Information Systems, AI,
+  digital technologies, and decision-making. My research uses causal inference,
+  large-scale digital-trace and text data, NLP/LLM evaluation, panel methods,
+  and machine learning to study how emerging technologies affect organizations,
+  work, and communities.
 
 sections:
   - title: Education
     items:
-      - what: "M.S. / M.Tech in [Field]"
-        where: "[University]"
-        when: 2020 – 2022
+      - what: "Dual Degree (B.Tech. Hons. + M.Tech.), Industrial Engineering & Management"
+        where: "Indian Institute of Technology (IIT) Kharagpur, India"
+        when: "2018 – 2023"
         details:
-          - "Thesis: [Title], advised by [Advisor]"
-          - "GPA: [x/y] · [Honors]"
-      - what: "B.Tech in [Field]"
-        where: "[University]"
-        when: 2016 – 2020
+          - "Department of Industrial & Systems Engineering"
+          - "CGPA: 7.23/10"
+          - "Master’s Thesis: Ergonomic Evaluation of Healthcare Work Systems in India from the Perspective of Nurses"
+          - "Advisor: Prof. Pradip Kumar Ray"
+
+  - title: Research Interests
+    items:
+      - what: "Research Areas"
+        where: "Information Systems; Economics of AI; Human–AI Interaction; Future of Work; Digital Innovation; Technology & Society; Computational Social Science."
+      - what: "Methods"
+        where: "Causal inference, large-scale digital-trace and text data, NLP/LLM evaluation, panel methods, and machine learning."
+
+  - title: Work-in-Progress
+    items:
+      - what: "Geographic Bias in LLMs: Evidence from Reddit Data"
+        where: "Deepa Mani, Nishant Chadha, and Priyanshi"
+        when: "Accepted – CODE 2026–27"
         details:
-          - "[Rank / honors]"
+          - "Extended abstract accepted at the Conference on the Digital Economy (CODE); full manuscript in preparation."
+
+      - what: "AI Coding Assistants and Technical Debt: A Difference-in-Differences Study"
+        where: "with Prof. Vasundhara and Prof. Deepa Mani"
+        when: "Research in progress"
+        details:
+          - "Quasi-experimental study of GitHub Copilot and ChatGPT using 471 repositories and approximately 665K commits."
+
+      - what: "Future of Work in India"
+        when: "Research in progress"
+        details:
+          - "Large-scale job-posting research on AI/LLMs, occupations, skills, and labour demand in the Indian context."
+
+      - what: "AI Companies in India: Tracxn / PitchBook Analysis"
+        when: "Framing in progress"
+        details:
+          - "Company-level empirical analysis of AI firms, startup outcomes, and the Indian AI ecosystem across two independent databases."
 
   - title: Research Experience
     items:
-      - what: Research Associate
-        where: "[Institution] · with Prof. [Name]"
-        when: 2025 – present
+      - what: "Research Associate"
+        where: "Indian School of Business (ISB), Hyderabad · Information Systems · Primary advisor: Prof. Deepa Mani"
+        when: "Dec 2024 – Present"
         details:
-          - "[Project, method, and your specific role]"
-          - "[Another bullet]"
+          - "Execute end-to-end empirical research workflows spanning research design, literature synthesis, large-scale data construction, statistical analysis, robustness checks, visualization, and academic writing."
+          - "Built and audited LLM-generation pipelines on HPC infrastructure; developed paired India–U.S. Reddit datasets and evaluated geographic differences using sentence embeddings, fixed effects, and clustered inference."
+          - "Designed a difference-in-differences study of AI coding assistants; constructed a panel of 471 GitHub repositories and approximately 665,000 commits (2019–2023), and operationalized technical debt using self-admitted technical debt (SATD)."
+          - "Conducted firm-level AI-company analysis using Tracxn and PitchBook; work with Revelio and in-house collected Indian job postings to study occupations, skills, and AI exposure in the labour market."
+          - "Replicated prior regressions on gender and U.S. patent impact and reconstructed source mappings."
+          - "Built Indian-patent research infrastructure covering 654,186 published and 101,648 granted patents, with detailed records for 359,391+ publications."
+          - "Developed an initial cloze/question-answer framework for evaluating GPT-based responses in U.S. and Indian startup settings, with attention to factuality, safety, and high-risk-domain evaluation."
 
-  - title: Working Papers
+  - title: Coursework
     items:
-      - what: "Do Store Managers Know Better? Evidence from Algorithmic Forecast Overrides"
-        where: "with [Coauthor]"
-        when: 2026
-      - what: "Sharing Point-of-Sale Data in Multi-Tier Supply Chains — Who Benefits?"
-        where: "Solo · in progress"
-        when: 2026
+      - what: "PhD-level FPM Coursework, ISB"
+        where: "Economics A; Economics B; Econometrics A (Prof. Bhavana Rai); Econometrics B (Prof. Manisha Chakrabarty)."
+
+      - what: "IS / Computational"
+        where: "Information Systems Lab; Software Engineering and Management; Big Data Processing."
+
+      - what: "Quantitative Methods"
+        where: "Probability & Statistics; Generalized Linear Models & Applications; Game Theory & Applications; Operations Research I–II; Optimisation & Heuristic Methods."
+
+  - title: Academic Projects
+    items:
+      - what: "Did the US–China Trade War Boost Corporate R&D? Evidence from a Difference-in-Differences Design"
+        where: "Econometrics B, ISB · PhD-level FPM course · Instructor: Prof. Manisha Chakrabarty · Group project"
+        when: "May 2026"
+        details:
+          - "Built a Compustat panel for 2015–2022 with 14,641 firm-year observations and 1,959 firms, together with industry-level tariff exposure."
+          - "Estimated two-way fixed-effects DiD models, event-study and placebo specifications, and robustness checks with clustered standard errors."
+          - "Found that R&D-active high-tech firms increased R&D by approximately 9.4 percentage points more than low-tech peers after the 2018 tariff shock; examined the role of IT/software in the estimated effect."
+
+      - what: "Replication: Does Women’s Labor Force Participation Reduce Domestic Violence?"
+        where: "Econometrics A, ISB · PhD-level FPM course · Instructor: Prof. Bhavana Rai"
+        when: "2026"
+        details:
+          - "Replicated descriptive tables and econometric specifications using Jordan DHS microdata."
+          - "Reconstructed emotional, physical, sexual, and aggregate domestic-violence outcomes and labour-force participation measures."
+          - "Implemented multivariate specifications and endogeneity corrections, including IV/2SLS and 2SRI using a leave-one-out cluster-level female labour-force-participation instrument."
+
+      - what: "Ergonomic Evaluation of Healthcare Work Systems in India"
+        where: "M.Tech Thesis · Advisor: Prof. Pradip Kumar Ray, IIT Kharagpur"
+        details:
+          - "Conducted field-based ergonomic assessment of nurses using questionnaire, anthropometric, and postural data."
+          - "Applied Nordic musculoskeletal measures, Body Part Discomfort measures, and OWAS to identify high-risk activities and intervention opportunities."
+
+      - what: "Bank Lending Decisions Optimization"
+        where: "Advisor: Dr. Akhilesh Kumar, IIT Kharagpur"
+        when: "Mar 2021 – Apr 2021"
+        details:
+          - "Formulated dynamic bank lending as a multi-objective optimization problem balancing profitability and default risk."
+          - "Implemented genetic algorithms, simulated annealing, and a hybrid heuristic and compared solution quality."
+
+      - what: "Construction Project Scheduling Optimization"
+        where: "Advisor: Prof. V. A. Achutha Naikan, IIT Kharagpur"
+        when: "Aug 2021 – Nov 2021"
+        details:
+          - "Applied CPM/PERT to identify critical activities and bottlenecks, analyse time–cost trade-offs, and derive feasible schedules across alternative project-completion dates."
+
+      - what: "Thief-Tracking Simulation Model"
+        when: "Mar 2021 – Apr 2021"
+        details:
+          - "Built an Arena discrete-event simulation of police pursuit and interception under varying traffic conditions."
+          - "Evaluated resource deployment, pursuit success probability, and service levels."
+
+      - what: "Virtual-Reality Simulation of a Car Interior"
+        when: "Jan 2020 – Apr 2020"
+        details:
+          - "Applied anthropometry and work-system-design principles to passenger-car interiors."
+          - "Developed a 3D front-seat/dashboard model in Google SketchUp for later simulation in Unity3D."
+
+  - title: Self-Directed Research Project
+    items:
+      - what: "LLMs for Mathematical Optimization: OptiChat Replication"
+        where: "GitHub: https://github.com/Priyanshi8806/optichat-colab"
+        when: "2026 – Present"
+        details:
+          - "Replicated components of an LLM-based optimization assistant using Pyomo, Qwen2.5-7B-Instruct, Llama-3.1-8B-Instruct, and HiGHS."
+          - "Implemented LP/MILP test cases and tested feasibility repair, sensitivity, what-if, and counterfactual queries."
+          - "Developed a small evaluation suite based on OptiChat’s agent roles to compare open-weight models on structured optimization tasks and diagnose failures in output formatting and counterfactual reasoning."
 
   - title: Industry Experience
     items:
-      - what: "[Title]"
-        where: "[Company]"
-        when: 2022 – 2025
+      - what: "Graduate Trainee; Assistant Manager, Road Logistics Pricing & Solutions"
+        where: "Kuehne+Nagel, India"
+        when: "Jul 2023 – Sep 2024"
         details:
-          - "[Impact bullet with a number]"
-          - "[Impact bullet with a number]"
+          - "Worked across pricing, solution design, and implementation in 3PL/4PL road logistics, supporting PAN-India enterprise transportation operations."
+          - "Developed pricing and forecasting analyses using XGBoost and recurrent neural networks."
 
-  - title: Presentations
-    items:
-      - what: "[Talk title]"
-        where: "[Seminar / Conference], [City]"
-        when: 2026
+      - what: "Software Development Engineer Intern"
+        where: "Akamai Technologies"
+        when: "May 2022 – Jul 2022"
+        details:
+          - "Worked with distributed infrastructure spanning 3,000+ servers and more than 1 TB/day of logs."
+          - "Built EFK-based analytics workflows and applied TF-IDF + K-means clustering."
 
-  - title: Honors & Awards
+  - title: Conferences
     items:
-      - what: "[Award]"
-        where: "[Organization]"
-        when: 2021
+      - what: "ISB–NBER Conference on Information and Competition in the Digital Economy"
+        where: "Attendee"
+        when: "Dec 2024"
 
-  - title: Teaching
-    items:
-      - what: "Teaching Assistant, [Course]"
-        where: "[University]"
-        when: 2021
+      - what: "CODE: Conference on the Digital Economy, ISB"
+        where: "Attendee and Volunteer"
+        when: "Jan 2025"
+
+      - what: "POMS: Conference on Operations and Supply Chain Management in Emerging Markets, ISB"
+        where: "Attendee"
+        when: "Jul 2025"
+
+      - what: "ISB–Deakin Symposium on Marketing Technology and AI"
+        where: "Attendee"
+        when: "Oct 2025"
+
+      - what: "ISB–NBER Conference on Household Finance across the Lifecycle"
+        where: "Attendee"
+        when: "Dec 2025"
 
   - title: Skills
     items:
-      - what: Methods
-        where: "Causal inference (DiD, IV, RD), panel econometrics, optimization, simulation, ML / NLP"
-      - what: Tools
-        where: "Python, R, Stata, SQL, Gurobi, Git"
+      - what: "Methods"
+        where: "Causal inference, difference-in-differences, fixed effects, panel econometrics, NLP/LLM evaluation, machine learning, optimization, simulation."
+
+      - what: "Programming & Analytics"
+        where: "Python, SQL, Stata, Excel, Tableau / Power BI, Pandas, NumPy, PySpark, C++, Git."
+
+      - what: "Machine Learning / NLP"
+        where: "RNN/LSTM, XGBoost, SVM, Random Forest, Decision Trees, K-means, TF-IDF, Doc2Vec/BERT, Sentence-Transformers, zero-shot classification."
+
+      - what: "Infrastructure"
+        where: "HPC workflows, Docker, Kubernetes, EFK, Hadoop basics."
 
   - title: References
     items:
-      - what: "Prof. [Name]"
-        where: "[Title], [Institution] · [email]"
-      - what: "Prof. [Name]"
-        where: "[Title], [Institution] · [email]"
+      - what: "Prof. Deepa Mani"
+        where: "Indian School of Business · Deepa_Mani@isb.edu"
+
+      - what: "Prof. Manoj Kumar Tiwari"
+        where: "Indian Institute of Management Mumbai · mkt009@gmail.com"
