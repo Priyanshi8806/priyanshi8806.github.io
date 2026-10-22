@@ -1,4 +1,5 @@
 # Conferences and academic events. Newest first.
+# Inline markdown links are supported.
 
 - id: c5
   date: 2025-12-01
@@ -6,7 +7,7 @@
 
 - id: c4
   date: 2025-10-01
-  text: "Attended the ISB–Deakin Symposium on Marketing Technology and AI at the Indian School of Business."
+  text: "Attended the [ISB–Deakin Symposium on Marketing Technology and AI](/photos/isb-deakin-symposium/) at the Indian School of Business — [view photos](/photos/isb-deakin-symposium/)."
 
 - id: c3
   date: 2025-07-01
