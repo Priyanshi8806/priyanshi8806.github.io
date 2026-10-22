@@ -15,7 +15,7 @@ export const site = {
 
   // 2–3 sentences: who you are, what you do, how you work.
   intro:
-    'I am a Research Associate at [Institution], where I study [topic] using [methods]. Before that, I spent [N] years at [Company] building [thing], which is where I first ran into the problems I now study. I combine [empirical / analytical / computational] methods with real operational data.',
+    'I am a Research Associate at Indian School of Business, where I study [topic] using [methods]. Before that, I spent more than 1 year at Kuehne+Nagel building [thing], which is where I first ran into the problems I now study. I combine [empirical / analytical / computational] methods with real operational data.',
 
   role: 'Research Associate, [Institution]',
   location: '[City, Country]',
@@ -34,7 +34,7 @@ export const site = {
   booking: 'https://cal.com/yourusername/20min',
 
   // Path to a static CV PDF in /public (e.g. '/cv.pdf'). Empty → the CV page offers "Print / Save as PDF".
-  cvPdf: '',
+  cvPdf: '/Priyanshi_IS.pdf',
 
   // Privacy-friendly analytics. Create a free site at goatcounter.com and put its code here (e.g. 'yourname').
   goatcounter: '',
